@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+
+		function conf(condition) {
+			return confirm(condition)
+		}
+
+		let toDo  = {
+
+			_list: [],
+			
+			AddLink: function  (name, content, createdAt, status) {
+				let note = {};
+				Object.defineProperties(note, {
+						name: {
+							value: name,
+							writable: false,
+							configurable: true,
+
+						},
+						content: {
+							value: content,
+							writable: false,
+							configurable: true,
+						},
+						createdAt: {
+							value: createdAt,
+							writable: false,
+							configurable: true,
+						},
+						status: {
+							value: status,
+							writable: false,
+							configurable: true,
+						}
+					});
+				let isCopy = toDo._list.find(function(i) {
+					
+					return i.content === note.content;
+				});;
+				if (isCopy) {
+					console.log(`The object with content "${note.content}" is present`);
+				} else {
+						toDo._list.push(note);
+				}
+			},
+
+			EditLink: function (name, content, createdAt, status, confirm) {
+				let note = {
+					name: name,
+					content: content,
+					createdAt: createdAt,
+					status: status
+				}
+				
+				const index = toDo._list.findIndex(function(i) {
+					return i.content === content;
+				});
+
+				if (index > -1) {
+					if (confirm) {
+						Object.defineProperties(toDo._list[index],  {
+							createdAt: {
+								writable: true,
+							},
+							status: {
+								writable: true,
+							}
+						})
+						for (let key in note) {
+							toDo._list[index][key] = note[key];
+						} 
+						Object.defineProperties(toDo._list[index],  {
+							createdAt: {
+								writable: true,
+							},
+							status: {
+								writable: true,
+							}
+						})
+					}	else {
+							console.log('Disabled editing');
+					} 
+				} else {
+						console.log('Link with content "${note.content}" doesn`t created.');
+				}
+			},
+
+			DeleteLink: function(content, confirm) {
+
+				const index = toDo._list.findIndex(function(i) {
+					return i.content === content;
+				});
+
+				if (confirm) {
+					toDo._list.splice(index, 1)
+				}
+			},
+
+			get StatusInfo () {
+				let total = toDo._list.length;
+				let ready = toDo._list.filter(function(i) {
+					return i.status === 'ready'
+				}).length;
+				console.log('Total status: ', total)
+				console.log('Status "ready": ', ready)
+				console.log('Status "project": ', total - ready)
+				
+			}
+		}
+
+		Object.defineProperty(toDo, '_list', {
+			enumerable: false,
+			writable: false, 
+			configurable: false
+		})
+
+		toDo.AddLink ('caffe','Let`s walk to caffe', '12/3/2012', 'ready');
+		toDo.AddLink ('house', 'Let`s build a house', '23/7/2013', 'ready');
+		toDo.AddLink ('homework', 'Let`s make a homework', '01/01/2011', 'project');
+		toDo.AddLink ('appartments', 'Let`s buy appartments', '01/01/2011', 'project');
+		toDo.AddLink ('plane', 'Let`s get by plane', '01/01/2011', 'ready');
+		toDo.AddLink ('appartments', 'Let`s buy appartments', '01/01/2011', 'project');
+
+		toDo.EditLink ('appartments', 'Let`s buy appartments', '09/09/2020', 'ready', conf('Do you want to change this note?'));
+
+		toDo.DeleteLink ('Let`s build house', conf('Do you want to delete this note?'));
+
+		console.log(toDo);
+
+		toDo.StatusInfo;
+
+		
+
+		console.log('_list properties ', Object.getOwnPropertyDescriptor(toDo, '_list'));
+	</script>
+</body>
+</html>
