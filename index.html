@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Document</title>
+	<title>toDo</title>
 </head>
 <body>
 	<script>
@@ -14,6 +14,19 @@
 		let toDo  = {
 
 			_list: [],
+
+			isUnique: function (value) {
+				return toDo._list.find(function(i) {
+					return i.content === value
+				})
+			},
+
+			getIndex: function (value) {
+				return toDo._list.findIndex(function(i) {
+					return i.content === value;
+				});
+			},
+
 			addLink: function  (name, content, createdAt, status) {
 				let note = {
 					name: name,
@@ -21,19 +34,12 @@
 					createdAt: createdAt,
 					status: status
 				};
-				Object.freeze(note)
 				
 				if (this.isUnique(note.content)) {
 					console.log(`The object with content "${note.content}" is present`);
 				} else {
 						toDo._list.push(note);
 				}
-			},
-			isUnique: function (value) {
-				return toDo._list.find(function(i) {
-					return i.content === value
-				})
-				
 			},
 			editLink: function (name, content, createdAt, status, confirm) {
 				let note = {
@@ -44,15 +50,11 @@
 				}
 
 				if (this.isUnique(note.content)) {
-					let index = toDo._list.findIndex(function(i) {
-						return i.content === note.content;
-					})
+					let index = this.getIndex(note.content)
 					if (confirm) {
-						Object.preventExtensions(toDo._list[index])
 						for (let key in note) {
 							toDo._list[index][key] = note[key];
 						} 
-						Object.freeze(toDo._list[index]);
 					}	else {
 							console.log('Disabled editing');
 					} 
@@ -62,11 +64,8 @@
 			},
 
 			deleteLink: function(content, confirm) {
-
-				const index = toDo._list.findIndex(function(i) {
-					return i.content === content;
-				});
-
+				let index = this.getIndex(content);
+				
 				if (confirm) {
 					toDo._list.splice(index, 1)
 				}
@@ -80,7 +79,7 @@
 				return {
 					'Total status': total,
 					'Status "Ready"': ready,
-					'Status "Project"': total-ready
+					'Status "Project"': total - ready,
 				}
 			}
 		}
@@ -102,12 +101,10 @@
 
 		toDo.deleteLink ('Let`s build house', conf('Do you want to delete this note?'));
 
-		toDo._list[3]['name']  = 'www'
 
+		console.log("Object toDo: ", toDo);
 
-		console.log(toDo);
-
-		console.log(toDo.StatusInfo);
+		console.log("toDo status: ", toDo.StatusInfo);
 
 		console.log('_list properties ', Object.getOwnPropertyDescriptor(toDo, '_list'));
 	</script>
